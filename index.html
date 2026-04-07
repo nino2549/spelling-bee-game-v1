@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-  <title>Spelling Bee Classroom · Offline</title>
+  <title>Spelling Bee B1 · Audio Example Edition</title>
   <style>
     :root{
       --bg1:#eff6ff; --bg2:#ffffff; --bg3:#dbeafe;
@@ -21,12 +21,16 @@
       background:linear-gradient(160deg,var(--bg1),var(--bg2) 45%,var(--bg3));
       overflow-x:hidden;
     }
-    canvas#bgCanvas{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none;}
+    canvas#bgCanvas{
+      position:fixed; inset:0; width:100%; height:100%;
+      z-index:0; pointer-events:none;
+    }
     .app{
       position:relative; z-index:1;
       min-height:100dvh;
       padding:calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 18px);
-      max-width:560px; margin:0 auto;
+      max-width:560px;
+      margin:0 auto;
     }
     .card{
       background:var(--card);
@@ -53,7 +57,10 @@
     .badge.secondary{background:#f1f5f9;color:#334155;border-color:#e2e8f0}
     .main{padding:14px}
     .topbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-    .pill{background:#f8fafc;border:1px solid var(--border);border-radius:16px;padding:10px 12px;text-align:center}
+    .pill{
+      background:#f8fafc;border:1px solid var(--border);border-radius:16px;
+      padding:10px 12px;text-align:center
+    }
     .pill strong{display:block;font-size:17px}
     .pill span{font-size:12px;color:var(--muted)}
     .progress-wrap{margin:14px 0 4px}
@@ -67,8 +74,8 @@
       border:1px solid #d9ebff;border-radius:20px;padding:16px;
     }
     .hint-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#64748b;font-weight:800}
-    .hint{font-size:30px;line-height:1.2;font-weight:800;margin-top:8px}
-    .actions{display:flex;gap:10px;margin-top:14px}
+    .hint{font-size:26px;line-height:1.45;font-weight:800;margin-top:8px}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
     .btn{
       appearance:none;border:none;border-radius:18px;padding:15px 16px;font-size:16px;font-weight:800;
       cursor:pointer;transition:.15s ease;display:inline-flex;align-items:center;justify-content:center;gap:8px;
@@ -78,7 +85,7 @@
     .btn.ghost{background:#fff;border:1px solid var(--border);color:var(--text)}
     .btn.full{width:100%}
     .btn.small{padding:12px 14px;font-size:15px}
-    .input-wrap,.stack{margin-top:14px;display:grid;gap:10px}
+    .input-wrap{margin-top:14px;display:grid;gap:10px}
     input{
       width:100%;height:56px;border-radius:18px;border:1px solid #cbd5e1;
       padding:0 16px;font-size:18px;outline:none;background:#fff;
@@ -101,6 +108,7 @@
     .level-btn small{display:block;color:var(--muted);font-size:12px;font-weight:600;margin-top:2px}
     .level-btn.active{border-color:#38bdf8;background:#eff6ff}
     .level-btn.locked{opacity:.55;background:#f8fafc}
+    .icon{font-size:18px}
     .screen{display:none}
     .screen.show{display:block}
     .center{text-align:center}
@@ -108,16 +116,18 @@
     .muted{color:var(--muted)}
     .score-row{display:flex;gap:8px;flex-wrap:wrap}
     .leader-item{
-      display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
+      display:flex;justify-content:space-between;align-items:center;
       padding:10px 12px;border-radius:14px;background:#f8fafc;border:1px solid var(--border);
       margin-top:8px;font-size:14px
     }
     .tiny{font-size:12px;color:var(--muted)}
-    .help{font-size:13px;color:var(--muted);line-height:1.5}
-    @media (max-width:420px){
-      .hint{font-size:26px}
+    .heart{font-size:18px}
+    @media (max-width:380px){
+      .hint{font-size:22px}
       h1{font-size:22px}
       .btn{font-size:15px}
+      .topbar{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .actions{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -127,29 +137,19 @@
   <div class="app">
     <div class="card">
       <div class="header">
-        <div class="title-row"><div class="trophy">🏆</div><h1>Spelling Bee Classroom</h1></div>
-        <p class="subtitle">เวอร์ชันไม่ใช้เน็ต · 6 Levels · คำละ 20 วินาที · 5 ชีวิต · Local Leaderboard</p>
+        <div class="title-row"><div class="trophy">🏆</div><h1>Spelling Bee Game</h1></div>
+        <p class="subtitle">B1 Audio Example Edition · 6 Levels · 20 seconds · 5 lives · Local Leaderboard</p>
         <div class="badges">
           <div class="badge" id="statusPill">1/6 levels unlocked</div>
-          <div class="badge secondary" id="playerBadge">Player: Guest</div>
+          <div class="badge secondary">New B1 Set</div>
         </div>
       </div>
 
       <div class="main">
         <div id="startScreen" class="screen show center">
-          <p class="big">Ready to compete?</p>
-          <p class="muted">ใส่ชื่อผู้เล่นก่อนเริ่ม เกมนี้ไม่ใช้เน็ต และเก็บอันดับไว้ในเครื่องนี้เท่านั้น</p>
-
-          <div class="panel" style="text-align:left">
-            <h3>Player setup</h3>
-            <div class="stack">
-              <input id="playerNameInput" type="text" maxlength="20" placeholder="ชื่อผู้เล่น เช่น Ava / Ongsa" />
-              <button class="btn primary full" id="startBtn">Start Game</button>
-            </div>
-            <div class="help" style="margin-top:10px">
-              ใช้งานง่าย ไม่ต้องเชื่อม Firebase และไม่ต้องมีอินเทอร์เน็ต
-            </div>
-          </div>
+          <p class="big">Ready to play?</p>
+          <p class="muted">ฟังคำศัพท์หรือฟังประโยคตัวอย่าง แล้วสะกดคำให้ถูกก่อนหมดเวลา</p>
+          <button class="btn primary full" id="startBtn">Start Game</button>
 
           <div class="panel">
             <h3>Top 5 Leaderboard</h3>
@@ -174,11 +174,11 @@
           </div>
 
           <div class="hint-box">
-            <div class="hint-label">Thai hint</div>
-            <div class="hint" id="thaiHint">ทำสำเร็จ</div>
+            <div class="hint-label">Example sentence</div>
+            <div class="hint" id="exampleHint">Press the button to hear the example sentence.</div>
             <div class="actions">
-              <button class="btn primary small" id="listenBtn">🔊 Listen</button>
-              <button class="btn ghost small" id="speakAgainBtn">🔁 Repeat</button>
+              <button class="btn primary small" id="listenWordBtn">🔊 Listen word</button>
+              <button class="btn ghost small" id="listenExampleBtn">🗣️ Example sentence</button>
             </div>
           </div>
 
@@ -190,14 +190,19 @@
           <div id="feedbackWrap"></div>
 
           <div class="panel">
-            <h3>Top 5 Leaderboard</h3>
+            <h3>Levels</h3>
+            <div class="levels" id="levelListGame"></div>
+          </div>
+
+          <div class="panel">
+            <h3>Leaderboard</h3>
             <div id="leaderboardGame"></div>
           </div>
 
           <div class="panel">
             <h3>How this game works</h3>
             <div class="muted" style="font-size:14px;line-height:1.6">
-              ด่านละ 10 คำ · คำละ 20 วินาที · ตอบผิดหรือหมดเวลาเสีย 1 ชีวิต · อันดับเก็บไว้เฉพาะเครื่องนี้
+              ด่านละ 10 คำ · คำละ 20 วินาที · ตอบผิดหรือหมดเวลาเสีย 1 ชีวิต · ไม่มีคำแปลไทย · ใช้เสียงคำศัพท์และประโยคตัวอย่างเป็นตัวช่วย
             </div>
             <div style="margin-top:10px;display:grid;gap:10px">
               <button class="btn ghost full" id="restartBtn">Restart current level</button>
@@ -211,68 +216,98 @@
 
 <script>
 const LEVELS = [
-  { id: 1, title: "Level 1 · B1 Starter", words: [
-    { word: "achieve", th: "ทำสำเร็จ" }, { word: "adventure", th: "การผจญภัย" },
-    { word: "borrow", th: "ยืม" }, { word: "careful", th: "ระมัดระวัง" },
-    { word: "decide", th: "ตัดสินใจ" }, { word: "explain", th: "อธิบาย" },
-    { word: "favourite", th: "ที่ชอบ" }, { word: "journey", th: "การเดินทาง" },
-    { word: "prefer", th: "ชอบมากกว่า" }, { word: "remember", th: "จดจำ" },
+  { id: 1, title: "Level 1 · Fresh B1 A", words: [
+    { word: "arrange", sentence: "We need to arrange the chairs before the meeting starts." },
+    { word: "attend", sentence: "All students must attend the science workshop tomorrow." },
+    { word: "balance", sentence: "It is hard to balance school work and free time." },
+    { word: "behaviour", sentence: "Good behaviour helps everyone learn in class." },
+    { word: "capture", sentence: "The camera can capture clear photos at night." },
+    { word: "compare", sentence: "Please compare the two pictures carefully." },
+    { word: "contact", sentence: "You should contact your teacher if you are absent." },
+    { word: "declare", sentence: "The judge will declare the winner at the end." },
+    { word: "deserve", sentence: "You deserve a break after working so hard." },
+    { word: "forward", sentence: "Please move forward when I call your number." },
   ]},
-  { id: 2, title: "Level 2 · Core B1", words: [
-    { word: "different", th: "แตกต่าง" }, { word: "difficult", th: "ยาก" },
-    { word: "electricity", th: "ไฟฟ้า" }, { word: "environment", th: "สิ่งแวดล้อม" },
-    { word: "equipment", th: "อุปกรณ์" }, { word: "exercise", th: "การออกกำลังกาย" },
-    { word: "important", th: "สำคัญ" }, { word: "improve", th: "พัฒนาให้ดีขึ้น" },
-    { word: "information", th: "ข้อมูล" }, { word: "language", th: "ภาษา" },
+  { id: 2, title: "Level 2 · Fresh B1 B", words: [
+    { word: "frequent", sentence: "Frequent practice will improve your spelling." },
+    { word: "gather", sentence: "The students gather in the hall every morning." },
+    { word: "general", sentence: "The teacher gave general advice before the test." },
+    { word: "graduate", sentence: "My sister will graduate from university next year." },
+    { word: "identity", sentence: "Each student must write their identity number clearly." },
+    { word: "impress", sentence: "Her speech will impress the judges." },
+    { word: "journal", sentence: "He writes in his journal every evening after dinner." },
+    { word: "maintain", sentence: "We must maintain the school garden together." },
+    { word: "measure", sentence: "Use a ruler to measure the length of the table." },
+    { word: "mention", sentence: "Do not forget to mention your team name." },
   ]},
-  { id: 3, title: "Level 3 · B1 Challenge", words: [
-    { word: "competition", th: "การแข่งขัน" }, { word: "conversation", th: "การสนทนา" },
-    { word: "dangerous", th: "อันตราย" }, { word: "education", th: "การศึกษา" },
-    { word: "especially", th: "โดยเฉพาะ" }, { word: "experience", th: "ประสบการณ์" },
-    { word: "government", th: "รัฐบาล" }, { word: "independent", th: "เป็นอิสระ" },
-    { word: "necessary", th: "จำเป็น" }, { word: "probably", th: "น่าจะ / คงจะ" },
+  { id: 3, title: "Level 3 · Fresh B1 C", words: [
+    { word: "observe", sentence: "Please observe the experiment quietly." },
+    { word: "organise", sentence: "They organise books by subject in the library." },
+    { word: "package", sentence: "The package arrived at our house this morning." },
+    { word: "patient", sentence: "You need to be patient when learning new words." },
+    { word: "perform", sentence: "The band will perform on stage tonight." },
+    { word: "popular", sentence: "That song became popular very quickly." },
+    { word: "predict", sentence: "Can you predict tomorrow's weather?" },
+    { word: "prevent", sentence: "Washing hands can prevent illness." },
+    { word: "private", sentence: "This room is private, so please knock first." },
+    { word: "promise", sentence: "I promise to finish my homework on time." },
   ]},
-  { id: 4, title: "Level 4 · B1 High", words: [
-    { word: "beautiful", th: "สวยงาม" }, { word: "communication", th: "การสื่อสาร" },
-    { word: "convenient", th: "สะดวก" }, { word: "development", th: "การพัฒนา" },
-    { word: "embarrassing", th: "น่าอาย" }, { word: "excellent", th: "ยอดเยี่ยม" },
-    { word: "instructions", th: "คำแนะนำ / ข้อปฏิบัติ" }, { word: "interesting", th: "น่าสนใจ" },
-    { word: "photography", th: "การถ่ายภาพ" }, { word: "successful", th: "ประสบความสำเร็จ" },
+  { id: 4, title: "Level 4 · Fresh B1 D", words: [
+    { word: "protect", sentence: "Sunscreen can protect your skin from the sun." },
+    { word: "publish", sentence: "The school will publish the results on Friday." },
+    { word: "purpose", sentence: "What is the purpose of this activity?" },
+    { word: "quality", sentence: "This shop sells products of high quality." },
+    { word: "recommend", sentence: "I recommend this book for young readers." },
+    { word: "regular", sentence: "Regular exercise is good for your health." },
+    { word: "replace", sentence: "We need to replace the broken chair." },
+    { word: "request", sentence: "She sent a request for more information." },
+    { word: "respect", sentence: "Students should respect school rules." },
+    { word: "responsible", sentence: "He is responsible for cleaning the classroom." },
   ]},
-  { id: 5, title: "Level 5 · Hard B1", words: [
-    { word: "approximately", th: "ประมาณ" }, { word: "celebration", th: "การเฉลิมฉลอง" },
-    { word: "challenging", th: "ท้าทาย" }, { word: "comfortable", th: "สบาย" },
-    { word: "complicated", th: "ซับซ้อน" }, { word: "confident", th: "มั่นใจ" },
-    { word: "disappointed", th: "ผิดหวัง" }, { word: "international", th: "นานาชาติ" },
-    { word: "pronunciation", th: "การออกเสียง" }, { word: "temperature", th: "อุณหภูมิ" },
+  { id: 5, title: "Level 5 · Fresh B1 E", words: [
+    { word: "separate", sentence: "Please separate plastic from paper before recycling." },
+    { word: "serious", sentence: "This is a serious problem that needs attention." },
+    { word: "several", sentence: "Several students joined the writing contest." },
+    { word: "similar", sentence: "These two bags look very similar." },
+    { word: "specific", sentence: "The coach gave us specific instructions." },
+    { word: "standard", sentence: "The work did not meet the required standard." },
+    { word: "suggest", sentence: "I suggest studying a little every day." },
+    { word: "support", sentence: "Parents support their children in many ways." },
+    { word: "surface", sentence: "The ball rolled across the smooth surface." },
+    { word: "survive", sentence: "Some plants can survive in very dry places." },
   ]},
-  { id: 6, title: "Level 6 · Final Boss", words: [
-    { word: "achievement", th: "ความสำเร็จ" }, { word: "advertisement", th: "โฆษณา" },
-    { word: "architecture", th: "สถาปัตยกรรม" }, { word: "environmental", th: "เกี่ยวกับสิ่งแวดล้อม" },
-    { word: "explanation", th: "คำอธิบาย" }, { word: "immediately", th: "ทันที" },
-    { word: "independent", th: "เป็นอิสระ" }, { word: "receptionist", th: "พนักงานต้อนรับ" },
-    { word: "understand", th: "เข้าใจ" }, { word: "unfortunately", th: "น่าเสียดาย" },
+  { id: 6, title: "Level 6 · Fresh B1 F", words: [
+    { word: "tradition", sentence: "Wearing blue on Friday is a school tradition." },
+    { word: "transfer", sentence: "Please transfer the notes into your notebook." },
+    { word: "transport", sentence: "Public transport is busy in the morning." },
+    { word: "treatment", sentence: "The patient received treatment at the hospital." },
+    { word: "typical", sentence: "Rain is typical during this season." },
+    { word: "unusual", sentence: "It is unusual to see snow in this city." },
+    { word: "variety", sentence: "The market sells a variety of fresh fruit." },
+    { word: "vehicle", sentence: "Every vehicle must stop at the gate." },
+    { word: "visible", sentence: "The moon was clearly visible last night." },
+    { word: "weather", sentence: "The weather changed suddenly in the afternoon." },
   ]},
 ];
 
-const STORAGE_KEY = 'spelling-bee-offline-v1';
-const LEADERBOARD_KEY = 'spelling-bee-offline-leaderboard-v1';
+const STORAGE_KEY = 'spelling-bee-b1-audio-v1';
+const LEADERBOARD_KEY = 'spelling-bee-b1-audio-leaderboard-v1';
 const QUESTION_TIME = 20;
 const START_LIVES = 5;
-const LEADERBOARD_LIMIT = 5;
 
 const $ = (id) => document.getElementById(id);
-const shuffle = (arr) => { const copy=[...arr]; for(let i=copy.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [copy[i],copy[j]]=[copy[j],copy[i]];} return copy; };
-const normalize = (t) => (t||'').trim().toLowerCase();
-const sanitizeName = (t) => (t||'').trim().replace(/\s+/g,' ').slice(0,20) || 'Guest';
+function shuffle(arr){ const copy=[...arr]; for(let i=copy.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [copy[i],copy[j]]=[copy[j],copy[i]];} return copy; }
+function normalize(t){ return (t||'').trim().toLowerCase(); }
 
-function speakWord(word){
+function speakText(text, rate=.85){
   if(!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(word);
-  u.lang='en-US'; u.rate=.82; u.pitch=1;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate=rate; u.pitch=1;
   window.speechSynthesis.speak(u);
 }
+function speakWord(word){ speakText(word, .78); }
+function speakExampleSentence(sentence){ speakText(sentence, .9); }
 
 let started = false;
 let levelIndex = 0;
@@ -288,8 +323,6 @@ let lives = START_LIVES;
 let timeLeft = QUESTION_TIME;
 let timerId = null;
 let leaderboard = [];
-let playerName = 'Guest';
-let submittedThisRun = false;
 
 function loadState(){
   try{
@@ -298,7 +331,6 @@ function loadState(){
       const saved = JSON.parse(raw);
       if(typeof saved.unlockedLevel === 'number') unlockedLevel = saved.unlockedLevel;
       if(Array.isArray(saved.completedLevels)) completedLevels = saved.completedLevels;
-      if(saved.playerName) playerName = saved.playerName;
     }
     const boardRaw = localStorage.getItem(LEADERBOARD_KEY);
     if(boardRaw){
@@ -308,14 +340,20 @@ function loadState(){
   }catch(e){}
 }
 function saveState(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ unlockedLevel, completedLevels, playerName }));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ unlockedLevel, completedLevels }));
 }
 function saveLeaderboard(){
-  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard.slice(0, LEADERBOARD_LIMIT)));
+  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard.slice(0,5)));
 }
 function currentLevel(){ return LEVELS[levelIndex]; }
 function currentWord(){ return queue[currentIndex]; }
 function statusPill(){ return unlockedLevel < LEVELS.length - 1 ? `${unlockedLevel + 1}/${LEVELS.length} levels unlocked` : 'All levels unlocked'; }
+function maskedSentence(item){
+  if(!item) return '';
+  const mask = '_'.repeat(item.word.length);
+  const regex = new RegExp(item.word, 'ig');
+  return item.sentence.replace(regex, mask);
+}
 
 function renderLevels(targetId){
   const target = $(targetId);
@@ -332,7 +370,7 @@ function renderLevels(targetId){
         <div>${level.title}</div>
         <small>10 words</small>
       </div>
-      <div>${isLocked ? '🔒' : isDone ? '✅' : '▶️'}</div>
+      <div class="icon">${isLocked ? '🔒' : isDone ? '✅' : '▶️'}</div>
     `;
     btn.addEventListener('click', ()=>{ if(!isLocked) resetLevel(idx); });
     target.appendChild(btn);
@@ -346,22 +384,15 @@ function renderLeaderboard(targetId){
     target.innerHTML = '<div class="tiny">ยังไม่มีคะแนน ลองเล่นรอบแรกได้เลย</div>';
     return;
   }
-  leaderboard.slice(0, LEADERBOARD_LIMIT).forEach((item, idx)=>{
+  leaderboard.slice(0,5).forEach((item, idx)=>{
     const div = document.createElement('div');
     div.className = 'leader-item';
     div.innerHTML = `
-      <div>
-        <div><strong>#${idx+1}</strong> · ${escapeHtml(item.playerName)}</div>
-        <div class="tiny">${escapeHtml(item.levelTitle)} · Score ${item.score} · Lives ${item.livesLeft}</div>
-      </div>
-      <div><strong>${item.rankingScore}</strong></div>
+      <div><strong>#${idx+1}</strong> · ${item.name}</div>
+      <div><strong>${item.score}</strong> pts</div>
     `;
     target.appendChild(div);
   });
-}
-
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
 function setScreen(screen){
@@ -407,7 +438,7 @@ function renderFeedback(){
     div.innerHTML = `
       <p class="big" style="color:#be123c">${feedback.title}</p>
       <p class="muted">${feedback.message}</p>
-      ${wrongWords.length ? `<div class="panel" style="text-align:left;margin-top:12px"><h3>Words to review</h3><div class="chips">${wrongWords.map(w=>`<span class="chip">${escapeHtml(w)}</span>`).join('')}</div></div>`:''}
+      ${wrongWords.length ? `<div class="panel" style="text-align:left;margin-top:12px"><h3>Words to review</h3><div class="chips">${wrongWords.map(w=>`<span class="chip">${w}</span>`).join('')}</div></div>`:''}
       <div style="display:grid;gap:10px;margin-top:12px">
         <button class="btn primary full" id="retryBtn">Try again</button>
         <button class="btn ghost full" id="homeBtn">Back to home</button>
@@ -425,8 +456,6 @@ function renderFeedback(){
 
 function render(){
   $('statusPill').textContent = statusPill();
-  $('playerBadge').textContent = `Player: ${playerName || 'Guest'}`;
-  $('playerNameInput').value = playerName === 'Guest' ? '' : playerName;
   renderLevels('levelListStart');
   renderLevels('levelListGame');
   renderLeaderboard('leaderboardStart');
@@ -441,20 +470,23 @@ function render(){
   $('levelTitle').textContent = currentLevel().title;
   $('scoreText').textContent = score;
   $('wordCount').textContent = `${Math.min(currentIndex + 1, currentLevel().words.length)}/${currentLevel().words.length}`;
-  $('thaiHint').textContent = currentWord()?.th || '-';
+  $('exampleHint').textContent = maskedSentence(currentWord()) || 'Press the button to hear the example sentence.';
   $('livesText').textContent = '❤️'.repeat(lives) + '🖤'.repeat(Math.max(0, START_LIVES-lives));
   $('timeText').textContent = timeLeft;
   $('timerFill').style.width = `${(timeLeft / QUESTION_TIME) * 100}%`;
   $('progressBar').style.width = `${(currentIndex / currentLevel().words.length) * 100}%`;
   $('answerInput').value = answer;
   $('checkBtn').textContent = feedback && feedback.type === 'answer' ? 'Next' : 'Check answer';
-  $('answerInput').disabled = !!feedback && feedback.type !== 'answer';
+  $('answerInput').disabled = !!feedback && feedback.type !== 'answer' ? true : false;
   renderFeedback();
 }
 
 function focusInput(){
   const input = $('answerInput');
-  setTimeout(()=>{ input.focus(); input.click(); }, 100);
+  setTimeout(()=>{
+    input.focus();
+    input.click();
+  }, 100);
 }
 
 function startTimer(){
@@ -479,15 +511,8 @@ function stopTimer(){
   }
 }
 
-function capturePlayerName(){
-  playerName = sanitizeName($('playerNameInput').value);
-  saveState();
-}
-
 function resetLevel(idx = levelIndex){
-  capturePlayerName();
   stopTimer();
-  submittedThisRun = false;
   started = true;
   levelIndex = idx;
   queue = shuffle(LEVELS[idx].words);
@@ -506,40 +531,29 @@ function resetLevel(idx = levelIndex){
   }, 250);
 }
 
-function currentRankingScore(finalScore = score, finalLevelIndex = levelIndex){
-  return ((finalLevelIndex + 1) * 100) + finalScore;
-}
-
-function saveRunToLeaderboard(reason){
-  if(submittedThisRun) return;
-  submittedThisRun = true;
+function addLeaderboardEntry(finalScore){
+  const name = currentLevel().title.replace(' · ', ' ');
   leaderboard.push({
-    playerName,
-    levelTitle: currentLevel().title,
-    levelIndex: levelIndex + 1,
-    score,
-    livesLeft: lives,
-    rankingScore: currentRankingScore(score, levelIndex),
-    reason,
+    name,
+    score: finalScore,
     ts: Date.now()
   });
-  leaderboard.sort((a,b)=> b.rankingScore - a.rankingScore || a.ts - b.ts);
-  leaderboard = leaderboard.slice(0, LEADERBOARD_LIMIT);
+  leaderboard.sort((a,b)=> b.score - a.score || a.ts - b.ts);
+  leaderboard = leaderboard.slice(0,5);
   saveLeaderboard();
 }
 
-function endGame(reasonTitle, reasonMsg, reasonCode='game_over'){
+function endGame(reasonTitle, reasonMsg){
   stopTimer();
-  saveRunToLeaderboard(reasonCode);
+  addLeaderboardEntry(score);
   feedback = { type:'game-over', title:reasonTitle, message:reasonMsg };
   render();
 }
 
 function nextQuestion(){
   if(!feedback || feedback.type !== 'answer') return;
-
   if(lives <= 0){
-    endGame('Game Over', `หมด 5 ชีวิตแล้ว ได้ ${score} คะแนน`, 'out_of_lives');
+    endGame('Game Over', `หมด 5 ชีวิตแล้ว ได้ ${score} คะแนน`);
     return;
   }
 
@@ -547,17 +561,16 @@ function nextQuestion(){
   if(isLastWord){
     const levelId = currentLevel().id;
     if(!completedLevels.includes(levelId)) completedLevels.push(levelId);
-
-    saveRunToLeaderboard(levelIndex < LEVELS.length - 1 ? 'level_clear' : 'game_clear');
-
     if(levelIndex < LEVELS.length - 1){
       unlockedLevel = Math.max(unlockedLevel, levelIndex + 1);
       saveState();
+      addLeaderboardEntry(score);
       feedback = { type:'level-complete', title:'Level cleared!', message:`คุณผ่าน ${currentLevel().title} ได้ ${score}/${currentLevel().words.length} คะแนน` };
       render();
       return;
     }else{
       saveState();
+      addLeaderboardEntry(score);
       feedback = { type:'game-complete', title:'You cleared all levels!', message:`เก่งมาก ได้ ${score}/${currentLevel().words.length} คะแนนในด่านสุดท้าย` };
       render();
       return;
@@ -596,7 +609,7 @@ function submitAnswer(){
   }
   render();
   if(lives <= 0){
-    setTimeout(()=> endGame('Game Over', `ตอบผิดจนหมดชีวิต ได้ ${score} คะแนน`, 'wrong_answer'), 500);
+    setTimeout(()=> endGame('Game Over', `ตอบผิดจนหมดชีวิต ได้ ${score} คะแนน`), 500);
   }
 }
 
@@ -607,31 +620,33 @@ function timeOutCurrentQuestion(){
   feedback = { type:'answer', correct:false, timeout:true, title:'Time up!', message:`หมดเวลาแล้ว คำที่ถูกคือ "${currentWord().word}" เสีย 1 ชีวิต` };
   render();
   if(lives <= 0){
-    setTimeout(()=> endGame('Game Over', `หมดเวลาและหมดชีวิต ได้ ${score} คะแนน`, 'timeout'), 500);
+    setTimeout(()=> endGame('Game Over', `หมดเวลาและหมดชีวิต ได้ ${score} คะแนน`), 500);
   }
 }
 
 function resetLeaderboard(){
   leaderboard = [];
   saveLeaderboard();
-  render();
+  renderLeaderboard('leaderboardStart');
+  renderLeaderboard('leaderboardGame');
 }
 
 let speechUnlocked = false;
 function unlockSpeech(){
   if(speechUnlocked) return;
-  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+  }
   speechUnlocked = true;
 }
 
 $('startBtn').addEventListener('click', ()=> resetLevel(0));
-$('listenBtn').addEventListener('click', ()=> { unlockSpeech(); if(currentWord()) speakWord(currentWord().word); });
-$('speakAgainBtn').addEventListener('click', ()=> { unlockSpeech(); if(currentWord()) speakWord(currentWord().word); });
+$('listenWordBtn').addEventListener('click', ()=> { unlockSpeech(); if(currentWord()) speakWord(currentWord().word); });
+$('listenExampleBtn').addEventListener('click', ()=> { unlockSpeech(); if(currentWord()) speakExampleSentence(currentWord().sentence); });
 $('restartBtn').addEventListener('click', ()=> resetLevel(levelIndex));
 $('resetBoardBtn').addEventListener('click', ()=> {
   if(confirm('Reset leaderboard?')) resetLeaderboard();
 });
-$('playerNameInput').addEventListener('input', capturePlayerName);
 $('checkBtn').addEventListener('click', ()=> {
   if(feedback && feedback.type === 'answer') nextQuestion();
   else submitAnswer();
@@ -656,7 +671,7 @@ document.addEventListener('visibilitychange', ()=> {
   }
 });
 
-/* Canvas particles / confetti */
+/* ===== Canvas particles / confetti ===== */
 const canvas = $('bgCanvas');
 const ctx = canvas.getContext('2d');
 let W = 0, H = 0;
@@ -665,26 +680,46 @@ let confetti = [];
 
 function resizeCanvas(){
   const dpr = Math.max(1, window.devicePixelRatio || 1);
-  W = window.innerWidth; H = window.innerHeight;
-  canvas.width = W * dpr; canvas.height = H * dpr;
-  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
   ctx.setTransform(dpr,0,0,dpr,0,0);
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 for(let i=0;i<26;i++){
-  particles.push({ x:Math.random()*W, y:Math.random()*H, r:1+Math.random()*3, dx:-0.3+Math.random()*0.6, dy:-0.3+Math.random()*0.6 });
+  particles.push({
+    x: Math.random()*W,
+    y: Math.random()*H,
+    r: 1 + Math.random()*3,
+    dx: -0.3 + Math.random()*0.6,
+    dy: -0.3 + Math.random()*0.6
+  });
 }
+
 function burst(n=12){
   for(let i=0;i<n;i++){
-    confetti.push({ x:W*0.5+(Math.random()*80-40), y:H*0.35+(Math.random()*40-20), dx:-3+Math.random()*6, dy:-6+Math.random()*4, size:4+Math.random()*6, life:50+Math.random()*30 });
+    confetti.push({
+      x: W*0.5 + (Math.random()*80-40),
+      y: H*0.35 + (Math.random()*40-20),
+      dx: -3 + Math.random()*6,
+      dy: -6 + Math.random()*4,
+      size: 4 + Math.random()*6,
+      life: 50 + Math.random()*30
+    });
   }
 }
+
 function animate(){
   ctx.clearRect(0,0,W,H);
+
   particles.forEach(p=>{
-    p.x += p.dx; p.y += p.dy;
+    p.x += p.dx;
+    p.y += p.dy;
     if(p.x < 0 || p.x > W) p.dx *= -1;
     if(p.y < 0 || p.y > H) p.dy *= -1;
     ctx.beginPath();
@@ -692,9 +727,13 @@ function animate(){
     ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
     ctx.fill();
   });
+
   confetti = confetti.filter(c=>c.life>0);
   confetti.forEach(c=>{
-    c.x += c.dx; c.y += c.dy; c.dy += 0.12; c.life -= 1;
+    c.x += c.dx;
+    c.y += c.dy;
+    c.dy += 0.12;
+    c.life -= 1;
     ctx.save();
     ctx.globalAlpha = Math.max(0, c.life / 80);
     ctx.translate(c.x,c.y);
@@ -703,6 +742,7 @@ function animate(){
     ctx.fillRect(-c.size/2,-c.size/2,c.size,c.size);
     ctx.restore();
   });
+
   requestAnimationFrame(animate);
 }
 animate();
