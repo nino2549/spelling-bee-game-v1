@@ -3,163 +3,712 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-  <title>Spelling Bee B1 · Classroom Online Leaderboard</title>
+  <title>Spelling Bee Classroom · Offline</title>
   <style>
-    :root{--bg1:#eff6ff;--bg2:#ffffff;--bg3:#dbeafe;--card:#ffffffee;--text:#0f172a;--muted:#475569;--primary:#0284c7;--primary2:#0369a1;--ok:#10b981;--bad:#ef4444;--warn:#f59e0b;--border:#dbe3ef;--shadow:0 10px 30px rgba(15,23,42,.10);--radius:22px}
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent} html,body{height:100%}
-    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans Thai",sans-serif;color:var(--text);background:linear-gradient(160deg,var(--bg1),var(--bg2) 45%,var(--bg3));overflow-x:hidden}
-    canvas#bgCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-    .app{position:relative;z-index:1;min-height:100dvh;padding:calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 18px);max-width:560px;margin:0 auto}
-    .card{background:var(--card);border:1px solid rgba(255,255,255,.65);backdrop-filter:blur(10px);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-    .header{padding:18px 16px 14px;background:linear-gradient(180deg,#fff,#f8fbff);border-bottom:1px solid var(--border)}
-    .title-row{display:flex;align-items:center;gap:10px}.trophy{font-size:24px} h1{font-size:24px;line-height:1.15;margin:0}
+    :root{
+      --bg1:#eff6ff; --bg2:#ffffff; --bg3:#dbeafe;
+      --card:#ffffffee; --text:#0f172a; --muted:#475569;
+      --primary:#0284c7; --primary2:#0369a1; --ok:#10b981; --bad:#ef4444;
+      --warn:#f59e0b; --border:#dbe3ef; --shadow:0 10px 30px rgba(15,23,42,.10);
+      --radius:22px;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans Thai",sans-serif;
+      color:var(--text);
+      background:linear-gradient(160deg,var(--bg1),var(--bg2) 45%,var(--bg3));
+      overflow-x:hidden;
+    }
+    canvas#bgCanvas{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none;}
+    .app{
+      position:relative; z-index:1;
+      min-height:100dvh;
+      padding:calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 18px);
+      max-width:560px; margin:0 auto;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.65);
+      backdrop-filter: blur(10px);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .header{
+      padding:18px 16px 14px;
+      background:linear-gradient(180deg,#fff,#f8fbff);
+      border-bottom:1px solid var(--border);
+    }
+    .title-row{display:flex;align-items:center;gap:10px}
+    .trophy{font-size:24px}
+    h1{font-size:24px;line-height:1.15;margin:0}
     .subtitle{margin:8px 0 0;color:var(--muted);font-size:14px;line-height:1.45}
-    .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.badge{font-size:12px;font-weight:700;border-radius:999px;padding:8px 12px;background:#e0f2fe;color:#075985;border:1px solid #bae6fd}.badge.secondary{background:#f1f5f9;color:#334155;border-color:#e2e8f0}
-    .main{padding:14px}.topbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pill{background:#f8fafc;border:1px solid var(--border);border-radius:16px;padding:10px 12px;text-align:center}.pill strong{display:block;font-size:17px}.pill span{font-size:12px;color:var(--muted)}
-    .progress-wrap{margin:14px 0 4px}.progress{height:10px;background:#e5eef8;border-radius:999px;overflow:hidden}.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--primary),#38bdf8);transition:width .25s ease}
-    .timer-wrap{margin-top:10px}.timer-bar{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden}.timer-fill{height:100%;width:100%;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);transition:width .2s linear}
-    .hint-box{margin-top:14px;background:linear-gradient(180deg,#eef6ff,#f8fbff);border:1px solid #d9ebff;border-radius:20px;padding:16px}.hint-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#64748b;font-weight:800}.hint{font-size:30px;line-height:1.2;font-weight:800;margin-top:8px}
-    .actions{display:flex;gap:10px;margin-top:14px}.btn{appearance:none;border:none;border-radius:18px;padding:15px 16px;font-size:16px;font-weight:800;cursor:pointer;transition:.15s ease;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn:active{transform:scale(.985)}.btn.primary{background:linear-gradient(180deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 8px 20px rgba(2,132,199,.25)}.btn.ghost{background:#fff;border:1px solid var(--border);color:var(--text)}.btn.full{width:100%}.btn.small{padding:12px 14px;font-size:15px}
-    .input-wrap,.stack{margin-top:14px;display:grid;gap:10px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    input{width:100%;height:56px;border-radius:18px;border:1px solid #cbd5e1;padding:0 16px;font-size:17px;outline:none;background:#fff} input:focus{border-color:#38bdf8;box-shadow:0 0 0 4px rgba(56,189,248,.16)}
-    .feedback{margin-top:14px;border-radius:18px;padding:14px 15px;font-size:15px;line-height:1.5;border:1px solid}.feedback.ok{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}.feedback.bad{background:#fef2f2;color:#991b1b;border-color:#fecaca}.feedback.warn{background:#fff7ed;color:#9a3412;border-color:#fed7aa}.feedback-title{font-weight:900;margin-bottom:4px}
-    .panel{margin-top:14px;border:1px solid var(--border);border-radius:18px;padding:14px;background:#fff}.panel h3{margin:0 0 10px;font-size:15px}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:999px;padding:7px 10px;font-size:13px}
-    .levels{margin-top:14px;display:grid;gap:10px}.level-btn{width:100%;text-align:left;padding:13px 14px;border-radius:18px;border:1px solid var(--border);background:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:15px;font-weight:700}.level-btn small{display:block;color:var(--muted);font-size:12px;font-weight:600;margin-top:2px}.level-btn.active{border-color:#38bdf8;background:#eff6ff}.level-btn.locked{opacity:.55;background:#f8fafc}
-    .screen{display:none}.screen.show{display:block}.center{text-align:center}.big{font-size:28px;font-weight:900;margin:0}.muted{color:var(--muted)}.score-row{display:flex;gap:8px;flex-wrap:wrap}
-    .leader-item{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:14px;background:#f8fafc;border:1px solid var(--border);margin-top:8px;font-size:14px}
-    .tiny{font-size:12px;color:var(--muted)}.help{font-size:13px;color:var(--muted);line-height:1.5}.status{margin-top:10px;padding:10px 12px;border-radius:14px;border:1px solid var(--border);background:#f8fafc;font-size:13px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-    @media (max-width:420px){.grid2{grid-template-columns:1fr}.hint{font-size:26px}h1{font-size:22px}.btn{font-size:15px}}
+    .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .badge{
+      font-size:12px;font-weight:700;border-radius:999px;padding:8px 12px;
+      background:#e0f2fe;color:#075985;border:1px solid #bae6fd;
+    }
+    .badge.secondary{background:#f1f5f9;color:#334155;border-color:#e2e8f0}
+    .main{padding:14px}
+    .topbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .pill{background:#f8fafc;border:1px solid var(--border);border-radius:16px;padding:10px 12px;text-align:center}
+    .pill strong{display:block;font-size:17px}
+    .pill span{font-size:12px;color:var(--muted)}
+    .progress-wrap{margin:14px 0 4px}
+    .progress{height:10px;background:#e5eef8;border-radius:999px;overflow:hidden}
+    .progress > div{height:100%;width:0;background:linear-gradient(90deg,var(--primary),#38bdf8);transition:width .25s ease}
+    .timer-wrap{margin-top:10px}
+    .timer-bar{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+    .timer-fill{height:100%;width:100%;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);transition:width .2s linear}
+    .hint-box{
+      margin-top:14px;background:linear-gradient(180deg,#eef6ff,#f8fbff);
+      border:1px solid #d9ebff;border-radius:20px;padding:16px;
+    }
+    .hint-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#64748b;font-weight:800}
+    .hint{font-size:30px;line-height:1.2;font-weight:800;margin-top:8px}
+    .actions{display:flex;gap:10px;margin-top:14px}
+    .btn{
+      appearance:none;border:none;border-radius:18px;padding:15px 16px;font-size:16px;font-weight:800;
+      cursor:pointer;transition:.15s ease;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    }
+    .btn:active{transform:scale(.985)}
+    .btn.primary{background:linear-gradient(180deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 8px 20px rgba(2,132,199,.25)}
+    .btn.ghost{background:#fff;border:1px solid var(--border);color:var(--text)}
+    .btn.full{width:100%}
+    .btn.small{padding:12px 14px;font-size:15px}
+    .input-wrap,.stack{margin-top:14px;display:grid;gap:10px}
+    input{
+      width:100%;height:56px;border-radius:18px;border:1px solid #cbd5e1;
+      padding:0 16px;font-size:18px;outline:none;background:#fff;
+    }
+    input:focus{border-color:#38bdf8;box-shadow:0 0 0 4px rgba(56,189,248,.16)}
+    .feedback{margin-top:14px;border-radius:18px;padding:14px 15px;font-size:15px;line-height:1.5;border:1px solid}
+    .feedback.ok{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
+    .feedback.bad{background:#fef2f2;color:#991b1b;border-color:#fecaca}
+    .feedback.warn{background:#fff7ed;color:#9a3412;border-color:#fed7aa}
+    .feedback-title{font-weight:900;margin-bottom:4px}
+    .panel{margin-top:14px;border:1px solid var(--border);border-radius:18px;padding:14px;background:#fff}
+    .panel h3{margin:0 0 10px;font-size:15px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:999px;padding:7px 10px;font-size:13px}
+    .levels{margin-top:14px;display:grid;gap:10px}
+    .level-btn{
+      width:100%;text-align:left;padding:13px 14px;border-radius:18px;border:1px solid var(--border);
+      background:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:15px;font-weight:700;
+    }
+    .level-btn small{display:block;color:var(--muted);font-size:12px;font-weight:600;margin-top:2px}
+    .level-btn.active{border-color:#38bdf8;background:#eff6ff}
+    .level-btn.locked{opacity:.55;background:#f8fafc}
+    .screen{display:none}
+    .screen.show{display:block}
+    .center{text-align:center}
+    .big{font-size:28px;font-weight:900;margin:0}
+    .muted{color:var(--muted)}
+    .score-row{display:flex;gap:8px;flex-wrap:wrap}
+    .leader-item{
+      display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
+      padding:10px 12px;border-radius:14px;background:#f8fafc;border:1px solid var(--border);
+      margin-top:8px;font-size:14px
+    }
+    .tiny{font-size:12px;color:var(--muted)}
+    .help{font-size:13px;color:var(--muted);line-height:1.5}
+    @media (max-width:420px){
+      .hint{font-size:26px}
+      h1{font-size:22px}
+      .btn{font-size:15px}
+    }
   </style>
 </head>
 <body>
-<canvas id="bgCanvas"></canvas>
-<div class="app"><div class="card"><div class="header">
-  <div class="title-row"><div class="trophy">🏆</div><h1>Spelling Bee Classroom</h1></div>
-  <p class="subtitle">เวอร์ชันแข่งทั้งห้อง · 6 Levels · คำละ 20 วินาที · 5 ชีวิต · Online Leaderboard</p>
-  <div class="badges"><div class="badge" id="statusPill">1/6 levels unlocked</div><div class="badge secondary" id="roomBadge">Room: not set</div></div>
-</div><div class="main">
-<div id="startScreen" class="screen show center">
-  <p class="big">Ready to compete?</p><p class="muted">ใส่ชื่อผู้เล่นและรหัสห้องก่อนเริ่ม คะแนนจะขึ้นรวมทั้งห้องแบบออนไลน์</p>
-  <div class="panel" style="text-align:left"><h3>Player setup</h3>
-    <div class="stack">
-      <input id="playerNameInput" type="text" maxlength="20" placeholder="ชื่อผู้เล่น เช่น Ava / Ongsa" />
-      <input id="roomCodeInput" type="text" maxlength="30" placeholder="รหัสห้อง เช่น EP114" />
-      <div class="grid2"><button class="btn ghost full" id="connectBtn">Connect leaderboard</button><button class="btn primary full" id="startBtn">Start Game</button></div>
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="app">
+    <div class="card">
+      <div class="header">
+        <div class="title-row"><div class="trophy">🏆</div><h1>Spelling Bee Classroom</h1></div>
+        <p class="subtitle">เวอร์ชันไม่ใช้เน็ต · 6 Levels · คำละ 20 วินาที · 5 ชีวิต · Local Leaderboard</p>
+        <div class="badges">
+          <div class="badge" id="statusPill">1/6 levels unlocked</div>
+          <div class="badge secondary" id="playerBadge">Player: Guest</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div id="startScreen" class="screen show center">
+          <p class="big">Ready to compete?</p>
+          <p class="muted">ใส่ชื่อผู้เล่นก่อนเริ่ม เกมนี้ไม่ใช้เน็ต และเก็บอันดับไว้ในเครื่องนี้เท่านั้น</p>
+
+          <div class="panel" style="text-align:left">
+            <h3>Player setup</h3>
+            <div class="stack">
+              <input id="playerNameInput" type="text" maxlength="20" placeholder="ชื่อผู้เล่น เช่น Ava / Ongsa" />
+              <button class="btn primary full" id="startBtn">Start Game</button>
+            </div>
+            <div class="help" style="margin-top:10px">
+              ใช้งานง่าย ไม่ต้องเชื่อม Firebase และไม่ต้องมีอินเทอร์เน็ต
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Top 5 Leaderboard</h3>
+            <div id="leaderboardStart"></div>
+          </div>
+
+          <div class="levels" id="levelListStart"></div>
+        </div>
+
+        <div id="gameScreen" class="screen">
+          <div class="topbar">
+            <div class="pill"><strong id="levelTitle">Level 1</strong><span>Current level</span></div>
+            <div class="pill"><strong id="scoreText">0</strong><span>Score</span></div>
+            <div class="pill"><strong id="wordCount">1/10</strong><span>Word</span></div>
+            <div class="pill"><strong id="livesText">❤️❤️❤️❤️❤️</strong><span>Lives</span></div>
+          </div>
+
+          <div class="progress-wrap"><div class="progress"><div id="progressBar"></div></div></div>
+          <div class="timer-wrap">
+            <div class="score-row tiny"><div>Time left: <strong id="timeText">20</strong>s</div></div>
+            <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+          </div>
+
+          <div class="hint-box">
+            <div class="hint-label">Thai hint</div>
+            <div class="hint" id="thaiHint">ทำสำเร็จ</div>
+            <div class="actions">
+              <button class="btn primary small" id="listenBtn">🔊 Listen</button>
+              <button class="btn ghost small" id="speakAgainBtn">🔁 Repeat</button>
+            </div>
+          </div>
+
+          <div class="input-wrap">
+            <input id="answerInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type the English word here" />
+            <button class="btn primary full" id="checkBtn">Check answer</button>
+          </div>
+
+          <div id="feedbackWrap"></div>
+
+          <div class="panel">
+            <h3>Top 5 Leaderboard</h3>
+            <div id="leaderboardGame"></div>
+          </div>
+
+          <div class="panel">
+            <h3>How this game works</h3>
+            <div class="muted" style="font-size:14px;line-height:1.6">
+              ด่านละ 10 คำ · คำละ 20 วินาที · ตอบผิดหรือหมดเวลาเสีย 1 ชีวิต · อันดับเก็บไว้เฉพาะเครื่องนี้
+            </div>
+            <div style="margin-top:10px;display:grid;gap:10px">
+              <button class="btn ghost full" id="restartBtn">Restart current level</button>
+              <button class="btn ghost full" id="resetBoardBtn">Reset leaderboard</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="status" id="firebaseStatus">ยังไม่ได้เชื่อม online leaderboard</div>
-    <div class="help" style="margin-top:10px">ถ้ายังไม่ได้ใส่ Firebase config เกมจะเล่นได้ แต่ leaderboard จะยังไม่ออนไลน์</div>
   </div>
-  <div class="panel"><h3>Top 10 Online Leaderboard</h3><div id="leaderboardStart"></div></div>
-  <div class="levels" id="levelListStart"></div>
-</div>
 
-<div id="gameScreen" class="screen">
-  <div class="topbar">
-    <div class="pill"><strong id="levelTitle">Level 1</strong><span>Current level</span></div>
-    <div class="pill"><strong id="scoreText">0</strong><span>Score</span></div>
-    <div class="pill"><strong id="wordCount">1/10</strong><span>Word</span></div>
-    <div class="pill"><strong id="livesText">❤️❤️❤️❤️❤️</strong><span>Lives</span></div>
-  </div>
-  <div class="progress-wrap"><div class="progress"><div id="progressBar"></div></div></div>
-  <div class="timer-wrap"><div class="score-row tiny"><div>Time left: <strong id="timeText">20</strong>s</div></div><div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div></div>
-  <div class="hint-box"><div class="hint-label">Thai hint</div><div class="hint" id="thaiHint">ทำสำเร็จ</div><div class="actions"><button class="btn primary small" id="listenBtn">🔊 Listen</button><button class="btn ghost small" id="speakAgainBtn">🔁 Repeat</button></div></div>
-  <div class="input-wrap"><input id="answerInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type the English word here" /><button class="btn primary full" id="checkBtn">Check answer</button></div>
-  <div id="feedbackWrap"></div>
-  <div class="panel"><h3>Top 10 Online Leaderboard</h3><div id="leaderboardGame"></div></div>
-  <div class="panel"><h3>How ranking works</h3><div class="muted" style="font-size:14px;line-height:1.6">ระบบเรียงตามด่านที่ไปได้สูงสุดก่อน แล้วค่อยดูคะแนนในด่านนั้น ถ้าเท่ากันจะดูคนที่ส่งก่อน</div><div style="margin-top:10px;display:grid;gap:10px"><button class="btn ghost full" id="restartBtn">Restart current level</button></div></div>
-</div>
-</div></div></div>
-
-<script type="module">
-const FIREBASE_CONFIG = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_AUTH_DOMAIN",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_STORAGE_BUCKET",
-  messagingSenderId: "PASTE_YOUR_MESSAGING_SENDER_ID",
-  appId: "PASTE_YOUR_APP_ID"
-};
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-
+<script>
 const LEVELS = [
-  { id: 1, title: "Level 1 · B1 Starter", words: [{ word: "achieve", th: "ทำสำเร็จ" }, { word: "adventure", th: "การผจญภัย" }, { word: "borrow", th: "ยืม" }, { word: "careful", th: "ระมัดระวัง" }, { word: "decide", th: "ตัดสินใจ" }, { word: "explain", th: "อธิบาย" }, { word: "favourite", th: "ที่ชอบ" }, { word: "journey", th: "การเดินทาง" }, { word: "prefer", th: "ชอบมากกว่า" }, { word: "remember", th: "จดจำ" }]},
-  { id: 2, title: "Level 2 · Core B1", words: [{ word: "different", th: "แตกต่าง" }, { word: "difficult", th: "ยาก" }, { word: "electricity", th: "ไฟฟ้า" }, { word: "environment", th: "สิ่งแวดล้อม" }, { word: "equipment", th: "อุปกรณ์" }, { word: "exercise", th: "การออกกำลังกาย" }, { word: "important", th: "สำคัญ" }, { word: "improve", th: "พัฒนาให้ดีขึ้น" }, { word: "information", th: "ข้อมูล" }, { word: "language", th: "ภาษา" }]},
-  { id: 3, title: "Level 3 · B1 Challenge", words: [{ word: "competition", th: "การแข่งขัน" }, { word: "conversation", th: "การสนทนา" }, { word: "dangerous", th: "อันตราย" }, { word: "education", th: "การศึกษา" }, { word: "especially", th: "โดยเฉพาะ" }, { word: "experience", th: "ประสบการณ์" }, { word: "government", th: "รัฐบาล" }, { word: "independent", th: "เป็นอิสระ" }, { word: "necessary", th: "จำเป็น" }, { word: "probably", th: "น่าจะ / คงจะ" }]},
-  { id: 4, title: "Level 4 · B1 High", words: [{ word: "beautiful", th: "สวยงาม" }, { word: "communication", th: "การสื่อสาร" }, { word: "convenient", th: "สะดวก" }, { word: "development", th: "การพัฒนา" }, { word: "embarrassing", th: "น่าอาย" }, { word: "excellent", th: "ยอดเยี่ยม" }, { word: "instructions", th: "คำแนะนำ / ข้อปฏิบัติ" }, { word: "interesting", th: "น่าสนใจ" }, { word: "photography", th: "การถ่ายภาพ" }, { word: "successful", th: "ประสบความสำเร็จ" }]},
-  { id: 5, title: "Level 5 · Hard B1", words: [{ word: "approximately", th: "ประมาณ" }, { word: "celebration", th: "การเฉลิมฉลอง" }, { word: "challenging", th: "ท้าทาย" }, { word: "comfortable", th: "สบาย" }, { word: "complicated", th: "ซับซ้อน" }, { word: "confident", th: "มั่นใจ" }, { word: "disappointed", th: "ผิดหวัง" }, { word: "international", th: "นานาชาติ" }, { word: "pronunciation", th: "การออกเสียง" }, { word: "temperature", th: "อุณหภูมิ" }]},
-  { id: 6, title: "Level 6 · Final Boss", words: [{ word: "achievement", th: "ความสำเร็จ" }, { word: "advertisement", th: "โฆษณา" }, { word: "architecture", th: "สถาปัตยกรรม" }, { word: "environmental", th: "เกี่ยวกับสิ่งแวดล้อม" }, { word: "explanation", th: "คำอธิบาย" }, { word: "immediately", th: "ทันที" }, { word: "independent", th: "เป็นอิสระ" }, { word: "receptionist", th: "พนักงานต้อนรับ" }, { word: "understand", th: "เข้าใจ" }, { word: "unfortunately", th: "น่าเสียดาย" }]}
+  { id: 1, title: "Level 1 · B1 Starter", words: [
+    { word: "achieve", th: "ทำสำเร็จ" }, { word: "adventure", th: "การผจญภัย" },
+    { word: "borrow", th: "ยืม" }, { word: "careful", th: "ระมัดระวัง" },
+    { word: "decide", th: "ตัดสินใจ" }, { word: "explain", th: "อธิบาย" },
+    { word: "favourite", th: "ที่ชอบ" }, { word: "journey", th: "การเดินทาง" },
+    { word: "prefer", th: "ชอบมากกว่า" }, { word: "remember", th: "จดจำ" },
+  ]},
+  { id: 2, title: "Level 2 · Core B1", words: [
+    { word: "different", th: "แตกต่าง" }, { word: "difficult", th: "ยาก" },
+    { word: "electricity", th: "ไฟฟ้า" }, { word: "environment", th: "สิ่งแวดล้อม" },
+    { word: "equipment", th: "อุปกรณ์" }, { word: "exercise", th: "การออกกำลังกาย" },
+    { word: "important", th: "สำคัญ" }, { word: "improve", th: "พัฒนาให้ดีขึ้น" },
+    { word: "information", th: "ข้อมูล" }, { word: "language", th: "ภาษา" },
+  ]},
+  { id: 3, title: "Level 3 · B1 Challenge", words: [
+    { word: "competition", th: "การแข่งขัน" }, { word: "conversation", th: "การสนทนา" },
+    { word: "dangerous", th: "อันตราย" }, { word: "education", th: "การศึกษา" },
+    { word: "especially", th: "โดยเฉพาะ" }, { word: "experience", th: "ประสบการณ์" },
+    { word: "government", th: "รัฐบาล" }, { word: "independent", th: "เป็นอิสระ" },
+    { word: "necessary", th: "จำเป็น" }, { word: "probably", th: "น่าจะ / คงจะ" },
+  ]},
+  { id: 4, title: "Level 4 · B1 High", words: [
+    { word: "beautiful", th: "สวยงาม" }, { word: "communication", th: "การสื่อสาร" },
+    { word: "convenient", th: "สะดวก" }, { word: "development", th: "การพัฒนา" },
+    { word: "embarrassing", th: "น่าอาย" }, { word: "excellent", th: "ยอดเยี่ยม" },
+    { word: "instructions", th: "คำแนะนำ / ข้อปฏิบัติ" }, { word: "interesting", th: "น่าสนใจ" },
+    { word: "photography", th: "การถ่ายภาพ" }, { word: "successful", th: "ประสบความสำเร็จ" },
+  ]},
+  { id: 5, title: "Level 5 · Hard B1", words: [
+    { word: "approximately", th: "ประมาณ" }, { word: "celebration", th: "การเฉลิมฉลอง" },
+    { word: "challenging", th: "ท้าทาย" }, { word: "comfortable", th: "สบาย" },
+    { word: "complicated", th: "ซับซ้อน" }, { word: "confident", th: "มั่นใจ" },
+    { word: "disappointed", th: "ผิดหวัง" }, { word: "international", th: "นานาชาติ" },
+    { word: "pronunciation", th: "การออกเสียง" }, { word: "temperature", th: "อุณหภูมิ" },
+  ]},
+  { id: 6, title: "Level 6 · Final Boss", words: [
+    { word: "achievement", th: "ความสำเร็จ" }, { word: "advertisement", th: "โฆษณา" },
+    { word: "architecture", th: "สถาปัตยกรรม" }, { word: "environmental", th: "เกี่ยวกับสิ่งแวดล้อม" },
+    { word: "explanation", th: "คำอธิบาย" }, { word: "immediately", th: "ทันที" },
+    { word: "independent", th: "เป็นอิสระ" }, { word: "receptionist", th: "พนักงานต้อนรับ" },
+    { word: "understand", th: "เข้าใจ" }, { word: "unfortunately", th: "น่าเสียดาย" },
+  ]},
 ];
-const STORAGE_KEY = 'spelling-bee-classroom-v1';
+
+const STORAGE_KEY = 'spelling-bee-offline-v1';
+const LEADERBOARD_KEY = 'spelling-bee-offline-leaderboard-v1';
 const QUESTION_TIME = 20;
 const START_LIVES = 5;
-const ONLINE_LIMIT = 10;
+const LEADERBOARD_LIMIT = 5;
 
-const $ = id => document.getElementById(id);
-const shuffle = arr => { const copy=[...arr]; for(let i=copy.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [copy[i],copy[j]]=[copy[j],copy[i]];} return copy; };
-const normalize = t => (t||'').trim().toLowerCase();
-const sanitizeName = t => (t||'').trim().replace(/\s+/g,' ').slice(0,20);
-const sanitizeRoom = t => (t||'').trim().replace(/\s+/g,'').toUpperCase().slice(0,30);
+const $ = (id) => document.getElementById(id);
+const shuffle = (arr) => { const copy=[...arr]; for(let i=copy.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [copy[i],copy[j]]=[copy[j],copy[i]];} return copy; };
+const normalize = (t) => (t||'').trim().toLowerCase();
+const sanitizeName = (t) => (t||'').trim().replace(/\s+/g,' ').slice(0,20) || 'Guest';
 
-function speakWord(word){ if(!('speechSynthesis' in window)) return; window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(word); u.lang='en-US'; u.rate=.82; u.pitch=1; window.speechSynthesis.speak(u); }
+function speakWord(word){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word);
+  u.lang='en-US'; u.rate=.82; u.pitch=1;
+  window.speechSynthesis.speak(u);
+}
 
-let firebaseReady=false, db=null, onlineUnsubscribe=null, onlineLeaderboard=[], playerName='', roomCode='', submittedThisRun=false;
-let started=false, levelIndex=0, queue=shuffle(LEVELS[0].words), currentIndex=0, answer='', feedback=null, score=0, unlockedLevel=0, completedLevels=[], wrongWords=[], lives=START_LIVES, timeLeft=QUESTION_TIME, timerId=null;
+let started = false;
+let levelIndex = 0;
+let queue = shuffle(LEVELS[0].words);
+let currentIndex = 0;
+let answer = '';
+let feedback = null;
+let score = 0;
+let unlockedLevel = 0;
+let completedLevels = [];
+let wrongWords = [];
+let lives = START_LIVES;
+let timeLeft = QUESTION_TIME;
+let timerId = null;
+let leaderboard = [];
+let playerName = 'Guest';
+let submittedThisRun = false;
 
-function hasFirebaseConfig(){ return FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("PASTE_YOUR_"); }
-function setFirebaseStatus(msg, ok=false){ const el=$('firebaseStatus'); el.textContent=msg; el.style.background=ok?'#ecfdf5':'#f8fafc'; el.style.borderColor=ok?'#a7f3d0':'#dbe3ef'; el.style.color=ok?'#065f46':'#334155'; }
-function initFirebaseIfPossible(){ if(!hasFirebaseConfig()){ setFirebaseStatus('ยังไม่ได้ใส่ Firebase config ในไฟล์ index.html', false); return; } try{ const app=initializeApp(FIREBASE_CONFIG); db=getFirestore(app); firebaseReady=true; setFirebaseStatus('เชื่อม Firebase สำเร็จ พร้อมใช้งาน online leaderboard', true); }catch(err){ console.error(err); setFirebaseStatus('เชื่อม Firebase ไม่สำเร็จ: '+err.message, false); } }
-function loadState(){ try{ const raw=localStorage.getItem(STORAGE_KEY); if(!raw) return; const saved=JSON.parse(raw); if(typeof saved.unlockedLevel==='number') unlockedLevel=saved.unlockedLevel; if(Array.isArray(saved.completedLevels)) completedLevels=saved.completedLevels; if(saved.playerName) playerName=saved.playerName; if(saved.roomCode) roomCode=saved.roomCode; }catch(e){} }
-function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({ unlockedLevel, completedLevels, playerName, roomCode })); }
-function currentLevel(){ return LEVELS[levelIndex]; } function currentWord(){ return queue[currentIndex]; } function statusPill(){ return unlockedLevel < LEVELS.length - 1 ? `${unlockedLevel + 1}/${LEVELS.length} levels unlocked` : 'All levels unlocked'; }
-function renderLevels(targetId){ const target=$(targetId); target.innerHTML=''; LEVELS.forEach((level, idx)=>{ const isLocked=idx>unlockedLevel, isActive=started&&idx===levelIndex, isDone=completedLevels.includes(level.id); const btn=document.createElement('button'); btn.className='level-btn'+(isLocked?' locked':'')+(isActive?' active':''); btn.disabled=isLocked; btn.innerHTML=`<div><div>${level.title}</div><small>10 words</small></div><div>${isLocked?'🔒':isDone?'✅':'▶️'}</div>`; btn.addEventListener('click', ()=>{ if(!isLocked) resetLevel(idx); }); target.appendChild(btn); }); }
-function esc(s){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-function renderLeaderboard(targetId){ const target=$(targetId); target.innerHTML=''; if(!onlineLeaderboard.length){ target.innerHTML='<div class="tiny">ยังไม่มีคะแนนออนไลน์ในห้องนี้</div>'; return; } onlineLeaderboard.forEach((item, idx)=>{ const div=document.createElement('div'); div.className='leader-item'; div.innerHTML=`<div><div><strong>#${idx+1}</strong> · ${esc(item.playerName||'Unknown')}</div><div class="tiny">${esc(item.levelTitle||'Level')} · Score ${item.score??0} · Lives ${item.livesLeft??0}</div></div><div><strong>${item.rankingScore??0}</strong></div>`; target.appendChild(div); }); }
-function setScreen(screen){ ['startScreen','gameScreen'].forEach(id => $(id).classList.remove('show')); $(screen).classList.add('show'); }
-function renderFeedback(){ const wrap=$('feedbackWrap'); wrap.innerHTML=''; if(!feedback) return; const div=document.createElement('div');
- if(feedback.type==='level-complete'){ div.className='panel center'; div.innerHTML=`<p class="big" style="color:#047857">${feedback.title}</p><p class="muted">${feedback.message}</p><div style="display:grid;gap:10px;margin-top:12px"><button class="btn primary full" id="goNextBtn">Go to next level</button><button class="btn ghost full" id="replayBtn">Replay this level</button></div>`; wrap.appendChild(div); $('goNextBtn').onclick=()=>resetLevel(Math.min(levelIndex+1, LEVELS.length-1)); $('replayBtn').onclick=()=>resetLevel(levelIndex); return; }
- if(feedback.type==='game-complete'){ div.className='panel center'; div.innerHTML=`<p class="big" style="color:#b45309">${feedback.title}</p><p class="muted">${feedback.message}</p><div style="margin-top:12px"><button class="btn primary full" id="playAgainBtn">Play again from Level 1</button></div>`; wrap.appendChild(div); $('playAgainBtn').onclick=()=>resetLevel(0); return; }
- if(feedback.type==='game-over'){ div.className='panel center'; div.innerHTML=`<p class="big" style="color:#be123c">${feedback.title}</p><p class="muted">${feedback.message}</p>${wrongWords.length ? `<div class="panel" style="text-align:left;margin-top:12px"><h3>Words to review</h3><div class="chips">${wrongWords.map(w=>`<span class="chip">${esc(w)}</span>`).join('')}</div></div>` : ''}<div style="display:grid;gap:10px;margin-top:12px"><button class="btn primary full" id="retryBtn">Try again</button><button class="btn ghost full" id="homeBtn">Back to home</button></div>`; wrap.appendChild(div); $('retryBtn').onclick=()=>resetLevel(levelIndex); $('homeBtn').onclick=()=>{ stopTimer(); started=false; render(); }; return; }
- div.className='feedback ' + (feedback.correct ? 'ok' : feedback.timeout ? 'warn' : 'bad'); div.innerHTML=`<div class="feedback-title">${feedback.title}</div><div>${feedback.message}</div>`; wrap.appendChild(div); }
-function render(){ $('statusPill').textContent=statusPill(); $('roomBadge').textContent=roomCode?`Room: ${roomCode}`:'Room: not set'; $('playerNameInput').value=playerName; $('roomCodeInput').value=roomCode; renderLevels('levelListStart'); renderLevels('levelListGame'); renderLeaderboard('leaderboardStart'); renderLeaderboard('leaderboardGame'); if(!started){ setScreen('startScreen'); return; } setScreen('gameScreen'); $('levelTitle').textContent=currentLevel().title; $('scoreText').textContent=score; $('wordCount').textContent=`${Math.min(currentIndex + 1, currentLevel().words.length)}/${currentLevel().words.length}`; $('thaiHint').textContent=currentWord()?.th||'-'; $('livesText').textContent='❤️'.repeat(lives)+'🖤'.repeat(Math.max(0, START_LIVES-lives)); $('timeText').textContent=timeLeft; $('timerFill').style.width=`${(timeLeft/QUESTION_TIME)*100}%`; $('progressBar').style.width=`${(currentIndex/currentLevel().words.length)*100}%`; $('answerInput').value=answer; $('checkBtn').textContent=feedback && feedback.type==='answer' ? 'Next' : 'Check answer'; $('answerInput').disabled=!!feedback && feedback.type!=='answer'; renderFeedback(); }
-function focusInput(){ const input=$('answerInput'); setTimeout(()=>{ input.focus(); input.click(); },100); }
-function startTimer(){ stopTimer(); timeLeft=QUESTION_TIME; render(); timerId=setInterval(()=>{ timeLeft-=1; if(timeLeft<=0){ timeLeft=0; stopTimer(); timeOutCurrentQuestion(); } render(); },1000); }
-function stopTimer(){ if(timerId){ clearInterval(timerId); timerId=null; } }
-function captureIdentity(){ playerName=sanitizeName($('playerNameInput').value); roomCode=sanitizeRoom($('roomCodeInput').value); saveState(); }
-function validateIdentity(){ captureIdentity(); if(!playerName){ alert('กรุณาใส่ชื่อผู้เล่น'); $('playerNameInput').focus(); return false; } if(!roomCode){ alert('กรุณาใส่รหัสห้อง'); $('roomCodeInput').focus(); return false; } return true; }
-function resetLevel(idx=levelIndex){ if(!validateIdentity()) return; stopTimer(); submittedThisRun=false; started=true; levelIndex=idx; queue=shuffle(LEVELS[idx].words); currentIndex=0; answer=''; feedback=null; score=0; wrongWords=[]; lives=START_LIVES; render(); focusInput(); unlockSpeech(); setTimeout(()=>{ speakWord(currentWord().word); startTimer(); },250); }
-function currentRankingScore(finalScore=score, finalLevelIndex=levelIndex){ return ((finalLevelIndex+1)*100)+finalScore; }
-async function submitOnlineScore(reason){ if(!firebaseReady || !db || !playerName || !roomCode || submittedThisRun) return; submittedThisRun=true; try{ await addDoc(collection(db,'rooms',roomCode,'scores'),{ playerName, roomCode, levelIndex:levelIndex+1, levelTitle:currentLevel().title, score, livesLeft:lives, rankingScore:currentRankingScore(score,levelIndex), reason, createdAt:serverTimestamp() }); }catch(err){ console.error(err); submittedThisRun=false; setFirebaseStatus('ส่งคะแนนไม่สำเร็จ: '+err.message,false); } }
-function endGame(reasonTitle, reasonMsg, reasonCode='game_over'){ stopTimer(); submitOnlineScore(reasonCode); feedback={ type:'game-over', title:reasonTitle, message:reasonMsg }; render(); }
-function nextQuestion(){ if(!feedback || feedback.type!=='answer') return; if(lives<=0){ endGame('Game Over', `หมด 5 ชีวิตแล้ว ได้ ${score} คะแนน`, 'out_of_lives'); return; } const isLastWord=currentIndex===currentLevel().words.length-1; if(isLastWord){ const levelId=currentLevel().id; if(!completedLevels.includes(levelId)) completedLevels.push(levelId); submitOnlineScore(levelIndex < LEVELS.length - 1 ? 'level_clear' : 'game_clear'); if(levelIndex < LEVELS.length - 1){ unlockedLevel=Math.max(unlockedLevel, levelIndex+1); saveState(); feedback={ type:'level-complete', title:'Level cleared!', message:`คุณผ่าน ${currentLevel().title} ได้ ${score}/${currentLevel().words.length} คะแนน` }; render(); return; } saveState(); feedback={ type:'game-complete', title:'You cleared all levels!', message:`เก่งมาก ได้ ${score}/${currentLevel().words.length} คะแนนในด่านสุดท้าย` }; render(); return; } currentIndex+=1; answer=''; feedback=null; $('answerInput').disabled=false; render(); focusInput(); setTimeout(()=>{ speakWord(currentWord().word); startTimer(); },180); }
-function loseLife(){ lives=Math.max(0,lives-1); }
-function submitAnswer(){ if(!currentWord() || feedback) return; stopTimer(); answer=$('answerInput').value; const correct=normalize(answer)===normalize(currentWord().word); if(correct){ score+=1; feedback={ type:'answer', correct:true, title:'Correct!', message:`Great job! "${currentWord().word}" is correct.` }; burst(16); } else { loseLife(); if(!wrongWords.includes(currentWord().word)) wrongWords.push(currentWord().word); feedback={ type:'answer', correct:false, title:'Not quite', message:`The correct spelling is "${currentWord().word}". เสีย 1 ชีวิต` }; } render(); if(lives<=0){ setTimeout(()=> endGame('Game Over', `ตอบผิดจนหมดชีวิต ได้ ${score} คะแนน`, 'wrong_answer'), 500); } }
-function timeOutCurrentQuestion(){ if(!currentWord() || feedback) return; loseLife(); if(!wrongWords.includes(currentWord().word)) wrongWords.push(currentWord().word); feedback={ type:'answer', correct:false, timeout:true, title:'Time up!', message:`หมดเวลาแล้ว คำที่ถูกคือ "${currentWord().word}" เสีย 1 ชีวิต` }; render(); if(lives<=0){ setTimeout(()=> endGame('Game Over', `หมดเวลาและหมดชีวิต ได้ ${score} คะแนน`, 'timeout'), 500); } }
-function connectOnlineLeaderboard(){ captureIdentity(); if(!firebaseReady){ setFirebaseStatus('ยังเชื่อมไม่ได้ เพราะยังไม่ใส่ Firebase config', false); return; } if(!roomCode){ setFirebaseStatus('กรุณาใส่ room code ก่อน', false); $('roomCodeInput').focus(); return; } if(onlineUnsubscribe) onlineUnsubscribe(); const q=query(collection(db,'rooms',roomCode,'scores'), orderBy('rankingScore','desc'), limit(ONLINE_LIMIT)); onlineUnsubscribe=onSnapshot(q, snap => { onlineLeaderboard=snap.docs.map(doc=>({ id:doc.id, ...doc.data() })); renderLeaderboard('leaderboardStart'); renderLeaderboard('leaderboardGame'); setFirebaseStatus(`เชื่อมห้อง ${roomCode} สำเร็จ`, true); }, err => { console.error(err); setFirebaseStatus('อ่าน leaderboard ไม่สำเร็จ: '+err.message, false); }); }
-let speechUnlocked=false; function unlockSpeech(){ if(speechUnlocked) return; if('speechSynthesis' in window) window.speechSynthesis.cancel(); speechUnlocked=true; }
-$('connectBtn').addEventListener('click', ()=>{ captureIdentity(); connectOnlineLeaderboard(); render(); });
-$('startBtn').addEventListener('click', ()=>resetLevel(0));
-$('listenBtn').addEventListener('click', ()=>{ unlockSpeech(); if(currentWord()) speakWord(currentWord().word); });
-$('speakAgainBtn').addEventListener('click', ()=>{ unlockSpeech(); if(currentWord()) speakWord(currentWord().word); });
-$('restartBtn').addEventListener('click', ()=>resetLevel(levelIndex));
-$('checkBtn').addEventListener('click', ()=>{ if(feedback && feedback.type==='answer') nextQuestion(); else submitAnswer(); });
-$('playerNameInput').addEventListener('input', captureIdentity);
-$('roomCodeInput').addEventListener('input', captureIdentity);
-$('answerInput').addEventListener('input', e=> answer=e.target.value);
-$('answerInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); if(feedback && feedback.type==='answer') nextQuestion(); else submitAnswer(); }});
-document.body.addEventListener('touchstart', unlockSpeech, { once:true });
-document.body.addEventListener('click', unlockSpeech, { once:true });
-document.addEventListener('visibilitychange', ()=>{ if(document.hidden){ stopTimer(); if('speechSynthesis' in window) window.speechSynthesis.cancel(); } else if(started && !feedback){ startTimer(); } });
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const saved = JSON.parse(raw);
+      if(typeof saved.unlockedLevel === 'number') unlockedLevel = saved.unlockedLevel;
+      if(Array.isArray(saved.completedLevels)) completedLevels = saved.completedLevels;
+      if(saved.playerName) playerName = saved.playerName;
+    }
+    const boardRaw = localStorage.getItem(LEADERBOARD_KEY);
+    if(boardRaw){
+      const savedBoard = JSON.parse(boardRaw);
+      if(Array.isArray(savedBoard)) leaderboard = savedBoard;
+    }
+  }catch(e){}
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ unlockedLevel, completedLevels, playerName }));
+}
+function saveLeaderboard(){
+  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard.slice(0, LEADERBOARD_LIMIT)));
+}
+function currentLevel(){ return LEVELS[levelIndex]; }
+function currentWord(){ return queue[currentIndex]; }
+function statusPill(){ return unlockedLevel < LEVELS.length - 1 ? `${unlockedLevel + 1}/${LEVELS.length} levels unlocked` : 'All levels unlocked'; }
 
-const canvas=$('bgCanvas'), ctx=canvas.getContext('2d'); let W=0,H=0, particles=[], confetti=[];
-function resizeCanvas(){ const dpr=Math.max(1,window.devicePixelRatio||1); W=window.innerWidth; H=window.innerHeight; canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.width=W+'px'; canvas.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
-window.addEventListener('resize', resizeCanvas); resizeCanvas();
-for(let i=0;i<26;i++) particles.push({ x:Math.random()*W, y:Math.random()*H, r:1+Math.random()*3, dx:-0.3+Math.random()*0.6, dy:-0.3+Math.random()*0.6 });
-function burst(n=12){ for(let i=0;i<n;i++) confetti.push({ x:W*0.5+(Math.random()*80-40), y:H*0.35+(Math.random()*40-20), dx:-3+Math.random()*6, dy:-6+Math.random()*4, size:4+Math.random()*6, life:50+Math.random()*30 }); }
-function animate(){ ctx.clearRect(0,0,W,H); particles.forEach(p=>{ p.x+=p.dx; p.y+=p.dy; if(p.x<0||p.x>W) p.dx*=-1; if(p.y<0||p.y>H) p.dy*=-1; ctx.beginPath(); ctx.fillStyle='rgba(56,189,248,0.18)'; ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); }); confetti=confetti.filter(c=>c.life>0); confetti.forEach(c=>{ c.x+=c.dx; c.y+=c.dy; c.dy+=0.12; c.life-=1; ctx.save(); ctx.globalAlpha=Math.max(0,c.life/80); ctx.translate(c.x,c.y); ctx.rotate(c.life*0.1); ctx.fillStyle='rgba(2,132,199,0.75)'; ctx.fillRect(-c.size/2,-c.size/2,c.size,c.size); ctx.restore(); }); requestAnimationFrame(animate); } animate();
+function renderLevels(targetId){
+  const target = $(targetId);
+  target.innerHTML = '';
+  LEVELS.forEach((level, idx)=>{
+    const isLocked = idx > unlockedLevel;
+    const isActive = started && idx === levelIndex;
+    const isDone = completedLevels.includes(level.id);
+    const btn = document.createElement('button');
+    btn.className = 'level-btn' + (isLocked ? ' locked':'') + (isActive ? ' active':'');
+    btn.disabled = isLocked;
+    btn.innerHTML = `
+      <div>
+        <div>${level.title}</div>
+        <small>10 words</small>
+      </div>
+      <div>${isLocked ? '🔒' : isDone ? '✅' : '▶️'}</div>
+    `;
+    btn.addEventListener('click', ()=>{ if(!isLocked) resetLevel(idx); });
+    target.appendChild(btn);
+  });
+}
 
-loadState(); initFirebaseIfPossible(); if(roomCode && firebaseReady) connectOnlineLeaderboard(); render();
+function renderLeaderboard(targetId){
+  const target = $(targetId);
+  target.innerHTML = '';
+  if(!leaderboard.length){
+    target.innerHTML = '<div class="tiny">ยังไม่มีคะแนน ลองเล่นรอบแรกได้เลย</div>';
+    return;
+  }
+  leaderboard.slice(0, LEADERBOARD_LIMIT).forEach((item, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'leader-item';
+    div.innerHTML = `
+      <div>
+        <div><strong>#${idx+1}</strong> · ${escapeHtml(item.playerName)}</div>
+        <div class="tiny">${escapeHtml(item.levelTitle)} · Score ${item.score} · Lives ${item.livesLeft}</div>
+      </div>
+      <div><strong>${item.rankingScore}</strong></div>
+    `;
+    target.appendChild(div);
+  });
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function setScreen(screen){
+  ['startScreen','gameScreen'].forEach(id => $(id).classList.remove('show'));
+  $(screen).classList.add('show');
+}
+
+function renderFeedback(){
+  const wrap = $('feedbackWrap');
+  wrap.innerHTML = '';
+  if(!feedback) return;
+
+  const div = document.createElement('div');
+
+  if(feedback.type === 'level-complete'){
+    div.className = 'panel center';
+    div.innerHTML = `
+      <p class="big" style="color:#047857">${feedback.title}</p>
+      <p class="muted">${feedback.message}</p>
+      <div style="display:grid;gap:10px;margin-top:12px">
+        <button class="btn primary full" id="goNextBtn">Go to next level</button>
+        <button class="btn ghost full" id="replayBtn">Replay this level</button>
+      </div>`;
+    wrap.appendChild(div);
+    $('goNextBtn').onclick = ()=> resetLevel(Math.min(levelIndex + 1, LEVELS.length - 1));
+    $('replayBtn').onclick = ()=> resetLevel(levelIndex);
+    return;
+  }
+
+  if(feedback.type === 'game-complete'){
+    div.className = 'panel center';
+    div.innerHTML = `
+      <p class="big" style="color:#b45309">${feedback.title}</p>
+      <p class="muted">${feedback.message}</p>
+      <div style="margin-top:12px"><button class="btn primary full" id="playAgainBtn">Play again from Level 1</button></div>`;
+    wrap.appendChild(div);
+    $('playAgainBtn').onclick = ()=> resetLevel(0);
+    return;
+  }
+
+  if(feedback.type === 'game-over'){
+    div.className = 'panel center';
+    div.innerHTML = `
+      <p class="big" style="color:#be123c">${feedback.title}</p>
+      <p class="muted">${feedback.message}</p>
+      ${wrongWords.length ? `<div class="panel" style="text-align:left;margin-top:12px"><h3>Words to review</h3><div class="chips">${wrongWords.map(w=>`<span class="chip">${escapeHtml(w)}</span>`).join('')}</div></div>`:''}
+      <div style="display:grid;gap:10px;margin-top:12px">
+        <button class="btn primary full" id="retryBtn">Try again</button>
+        <button class="btn ghost full" id="homeBtn">Back to home</button>
+      </div>`;
+    wrap.appendChild(div);
+    $('retryBtn').onclick = ()=> resetLevel(levelIndex);
+    $('homeBtn').onclick = ()=> { stopTimer(); started = false; render(); };
+    return;
+  }
+
+  div.className = 'feedback ' + (feedback.correct ? 'ok' : feedback.timeout ? 'warn' : 'bad');
+  div.innerHTML = `<div class="feedback-title">${feedback.title}</div><div>${feedback.message}</div>`;
+  wrap.appendChild(div);
+}
+
+function render(){
+  $('statusPill').textContent = statusPill();
+  $('playerBadge').textContent = `Player: ${playerName || 'Guest'}`;
+  $('playerNameInput').value = playerName === 'Guest' ? '' : playerName;
+  renderLevels('levelListStart');
+  renderLevels('levelListGame');
+  renderLeaderboard('leaderboardStart');
+  renderLeaderboard('leaderboardGame');
+
+  if(!started){
+    setScreen('startScreen');
+    return;
+  }
+
+  setScreen('gameScreen');
+  $('levelTitle').textContent = currentLevel().title;
+  $('scoreText').textContent = score;
+  $('wordCount').textContent = `${Math.min(currentIndex + 1, currentLevel().words.length)}/${currentLevel().words.length}`;
+  $('thaiHint').textContent = currentWord()?.th || '-';
+  $('livesText').textContent = '❤️'.repeat(lives) + '🖤'.repeat(Math.max(0, START_LIVES-lives));
+  $('timeText').textContent = timeLeft;
+  $('timerFill').style.width = `${(timeLeft / QUESTION_TIME) * 100}%`;
+  $('progressBar').style.width = `${(currentIndex / currentLevel().words.length) * 100}%`;
+  $('answerInput').value = answer;
+  $('checkBtn').textContent = feedback && feedback.type === 'answer' ? 'Next' : 'Check answer';
+  $('answerInput').disabled = !!feedback && feedback.type !== 'answer';
+  renderFeedback();
+}
+
+function focusInput(){
+  const input = $('answerInput');
+  setTimeout(()=>{ input.focus(); input.click(); }, 100);
+}
+
+function startTimer(){
+  stopTimer();
+  timeLeft = QUESTION_TIME;
+  render();
+  timerId = setInterval(()=>{
+    timeLeft -= 1;
+    if(timeLeft <= 0){
+      timeLeft = 0;
+      stopTimer();
+      timeOutCurrentQuestion();
+    }
+    render();
+  }, 1000);
+}
+
+function stopTimer(){
+  if(timerId){
+    clearInterval(timerId);
+    timerId = null;
+  }
+}
+
+function capturePlayerName(){
+  playerName = sanitizeName($('playerNameInput').value);
+  saveState();
+}
+
+function resetLevel(idx = levelIndex){
+  capturePlayerName();
+  stopTimer();
+  submittedThisRun = false;
+  started = true;
+  levelIndex = idx;
+  queue = shuffle(LEVELS[idx].words);
+  currentIndex = 0;
+  answer = '';
+  feedback = null;
+  score = 0;
+  wrongWords = [];
+  lives = START_LIVES;
+  render();
+  focusInput();
+  unlockSpeech();
+  setTimeout(()=> {
+    speakWord(currentWord().word);
+    startTimer();
+  }, 250);
+}
+
+function currentRankingScore(finalScore = score, finalLevelIndex = levelIndex){
+  return ((finalLevelIndex + 1) * 100) + finalScore;
+}
+
+function saveRunToLeaderboard(reason){
+  if(submittedThisRun) return;
+  submittedThisRun = true;
+  leaderboard.push({
+    playerName,
+    levelTitle: currentLevel().title,
+    levelIndex: levelIndex + 1,
+    score,
+    livesLeft: lives,
+    rankingScore: currentRankingScore(score, levelIndex),
+    reason,
+    ts: Date.now()
+  });
+  leaderboard.sort((a,b)=> b.rankingScore - a.rankingScore || a.ts - b.ts);
+  leaderboard = leaderboard.slice(0, LEADERBOARD_LIMIT);
+  saveLeaderboard();
+}
+
+function endGame(reasonTitle, reasonMsg, reasonCode='game_over'){
+  stopTimer();
+  saveRunToLeaderboard(reasonCode);
+  feedback = { type:'game-over', title:reasonTitle, message:reasonMsg };
+  render();
+}
+
+function nextQuestion(){
+  if(!feedback || feedback.type !== 'answer') return;
+
+  if(lives <= 0){
+    endGame('Game Over', `หมด 5 ชีวิตแล้ว ได้ ${score} คะแนน`, 'out_of_lives');
+    return;
+  }
+
+  const isLastWord = currentIndex === currentLevel().words.length - 1;
+  if(isLastWord){
+    const levelId = currentLevel().id;
+    if(!completedLevels.includes(levelId)) completedLevels.push(levelId);
+
+    saveRunToLeaderboard(levelIndex < LEVELS.length - 1 ? 'level_clear' : 'game_clear');
+
+    if(levelIndex < LEVELS.length - 1){
+      unlockedLevel = Math.max(unlockedLevel, levelIndex + 1);
+      saveState();
+      feedback = { type:'level-complete', title:'Level cleared!', message:`คุณผ่าน ${currentLevel().title} ได้ ${score}/${currentLevel().words.length} คะแนน` };
+      render();
+      return;
+    }else{
+      saveState();
+      feedback = { type:'game-complete', title:'You cleared all levels!', message:`เก่งมาก ได้ ${score}/${currentLevel().words.length} คะแนนในด่านสุดท้าย` };
+      render();
+      return;
+    }
+  }
+
+  currentIndex += 1;
+  answer = '';
+  feedback = null;
+  $('answerInput').disabled = false;
+  render();
+  focusInput();
+  setTimeout(()=> {
+    speakWord(currentWord().word);
+    startTimer();
+  }, 180);
+}
+
+function loseLife(){
+  lives = Math.max(0, lives - 1);
+}
+
+function submitAnswer(){
+  if(!currentWord() || feedback) return;
+  stopTimer();
+  answer = $('answerInput').value;
+  const correct = normalize(answer) === normalize(currentWord().word);
+  if(correct){
+    score += 1;
+    feedback = { type:'answer', correct:true, title:'Correct!', message:`Great job! "${currentWord().word}" is correct.` };
+    burst(16);
+  }else{
+    loseLife();
+    if(!wrongWords.includes(currentWord().word)) wrongWords.push(currentWord().word);
+    feedback = { type:'answer', correct:false, title:'Not quite', message:`The correct spelling is "${currentWord().word}". เสีย 1 ชีวิต` };
+  }
+  render();
+  if(lives <= 0){
+    setTimeout(()=> endGame('Game Over', `ตอบผิดจนหมดชีวิต ได้ ${score} คะแนน`, 'wrong_answer'), 500);
+  }
+}
+
+function timeOutCurrentQuestion(){
+  if(!currentWord() || feedback) return;
+  loseLife();
+  if(!wrongWords.includes(currentWord().word)) wrongWords.push(currentWord().word);
+  feedback = { type:'answer', correct:false, timeout:true, title:'Time up!', message:`หมดเวลาแล้ว คำที่ถูกคือ "${currentWord().word}" เสีย 1 ชีวิต` };
+  render();
+  if(lives <= 0){
+    setTimeout(()=> endGame('Game Over', `หมดเวลาและหมดชีวิต ได้ ${score} คะแนน`, 'timeout'), 500);
+  }
+}
+
+function resetLeaderboard(){
+  leaderboard = [];
+  saveLeaderboard();
+  render();
+}
+
+let speechUnlocked = false;
+function unlockSpeech(){
+  if(speechUnlocked) return;
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  speechUnlocked = true;
+}
+
+$('startBtn').addEventListener('click', ()=> resetLevel(0));
+$('listenBtn').addEventListener('click', ()=> { unlockSpeech(); if(currentWord()) speakWord(currentWord().word); });
+$('speakAgainBtn').addEventListener('click', ()=> { unlockSpeech(); if(currentWord()) speakWord(currentWord().word); });
+$('restartBtn').addEventListener('click', ()=> resetLevel(levelIndex));
+$('resetBoardBtn').addEventListener('click', ()=> {
+  if(confirm('Reset leaderboard?')) resetLeaderboard();
+});
+$('playerNameInput').addEventListener('input', capturePlayerName);
+$('checkBtn').addEventListener('click', ()=> {
+  if(feedback && feedback.type === 'answer') nextQuestion();
+  else submitAnswer();
+});
+$('answerInput').addEventListener('input', (e)=> answer = e.target.value);
+$('answerInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    if(feedback && feedback.type === 'answer') nextQuestion();
+    else submitAnswer();
+  }
+});
+
+document.body.addEventListener('touchstart', unlockSpeech, { once: true });
+document.body.addEventListener('click', unlockSpeech, { once: true });
+document.addEventListener('visibilitychange', ()=> {
+  if(document.hidden){
+    stopTimer();
+    if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  }else if(started && !feedback){
+    startTimer();
+  }
+});
+
+/* Canvas particles / confetti */
+const canvas = $('bgCanvas');
+const ctx = canvas.getContext('2d');
+let W = 0, H = 0;
+let particles = [];
+let confetti = [];
+
+function resizeCanvas(){
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+for(let i=0;i<26;i++){
+  particles.push({ x:Math.random()*W, y:Math.random()*H, r:1+Math.random()*3, dx:-0.3+Math.random()*0.6, dy:-0.3+Math.random()*0.6 });
+}
+function burst(n=12){
+  for(let i=0;i<n;i++){
+    confetti.push({ x:W*0.5+(Math.random()*80-40), y:H*0.35+(Math.random()*40-20), dx:-3+Math.random()*6, dy:-6+Math.random()*4, size:4+Math.random()*6, life:50+Math.random()*30 });
+  }
+}
+function animate(){
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p=>{
+    p.x += p.dx; p.y += p.dy;
+    if(p.x < 0 || p.x > W) p.dx *= -1;
+    if(p.y < 0 || p.y > H) p.dy *= -1;
+    ctx.beginPath();
+    ctx.fillStyle = 'rgba(56,189,248,0.18)';
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+  });
+  confetti = confetti.filter(c=>c.life>0);
+  confetti.forEach(c=>{
+    c.x += c.dx; c.y += c.dy; c.dy += 0.12; c.life -= 1;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, c.life / 80);
+    ctx.translate(c.x,c.y);
+    ctx.rotate(c.life * 0.1);
+    ctx.fillStyle = 'rgba(2,132,199,0.75)';
+    ctx.fillRect(-c.size/2,-c.size/2,c.size,c.size);
+    ctx.restore();
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+
+loadState();
+render();
 </script>
 </body>
 </html>
